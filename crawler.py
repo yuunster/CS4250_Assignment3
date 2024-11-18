@@ -33,8 +33,6 @@ visited_urls = set()
 while frontier:
     try:
         url = frontier.popleft()
-        if(url == TARGET_URL):
-            print('found target url')
         html = urlopen(url)
 
         html_response_body = html.read()
