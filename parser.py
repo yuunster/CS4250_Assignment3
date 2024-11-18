@@ -23,43 +23,44 @@ target_page = pages.find_one({ 'isTarget': True })
 target_html = target_page['html']
 bs = BeautifulSoup(target_html, 'html.parser')
 
-for div in bs.find_all('div', { 'class': 'clearfix' }):
+# Find each <img> tag of a professor listed in the main div
+imgs = bs.find('div', { 'id': 'main' }).find_all('img', alt=True)
+
+for img in imgs:
     professor_info = {}
 
     # NAME
-    try:
-        professor_info['name'] = div.find('h2').get_text().strip()
-    except:
-        # If no name, then it is an empty div. Continue to the next div
-        continue
+    professor_info['name'] = img['alt']
+
+    p_tag = img.find_next_sibling('p')
 
     # TITLE
     try:
-        professor_info['title'] = div.find('strong', string=re.compile(r'Title')).next_sibling.strip()
+        professor_info['title'] = p_tag.find('strong', string=re.compile(r'Title')).next_sibling.strip()
     except:
         print(professor_info['name'] + " does not have a title listed")
 
     # OFFICE
     try:
-        professor_info['office'] = div.find('strong', string=re.compile(r'Office')).next_sibling.strip()
+        professor_info['office'] = p_tag.find('strong', string=re.compile(r'Office')).next_sibling.strip()
     except:
         print(professor_info['name'] + " does not have an office listed")
 
     # PHONE
     try:
-        professor_info['phone'] = div.find('strong', string=re.compile(r'Phone')).next_sibling.strip()
+        professor_info['phone'] = p_tag.find('strong', string=re.compile(r'Phone')).next_sibling.strip()
     except:
         print(professor_info['name'] + " does not have a phone listed")
 
     # EMAIL
     try:
-        professor_info['email'] = div.find('strong', string=re.compile(r'Email')).next_sibling.next_sibling.get_text().strip()
+        professor_info['email'] = p_tag.find('strong', string=re.compile(r'Email')).next_sibling.next_sibling.get_text().strip()
     except:
         print(professor_info['name'] + " does not have an email listed")
 
     # WEBSITE
     try:
-        professor_info['website'] = div.find('strong', string=re.compile(r'Web')).next_sibling.next_sibling.get_text().strip()
+        professor_info['website'] = p_tag.find('strong', string=re.compile(r'Web')).next_sibling.next_sibling.get_text().strip()
     except:
         print(professor_info['name'] + " does not have a website listed")
 
